@@ -72,7 +72,39 @@
           <div>XP: <span id="modal-xp"></span></div>
           <div>Reputation: <span id="modal-rep"></span></div>
         </div>
-        <button id="btn-restart" class="btn-primary" onclick="location.reload()">Restart Level</button>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button id="btn-restart" class="btn-primary" onclick="location.reload()">Restart Level</button>
+          <button id="btn-to-menu" class="btn-primary" style="background: var(--bg-card); border: 1px solid var(--border-dim);" onclick="location.reload()">Back to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Menu Overlay -->
+    <div id="menu-overlay">
+      <div class="modal-box" style="min-width: 600px;">
+        <h1 style="font-family: 'JetBrains Mono', monospace; color: var(--neon-cyan);">STATION CONTROL CENTER</h1>
+        <p style="color: var(--text-dim); margin-bottom: 2rem;">Select operational shift or upgrade station infrastructure.</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; text-align: left;">
+          <div>
+            <h2 style="border-bottom: 1px solid var(--border-dim); padding-bottom: 0.5rem; margin-bottom: 1rem;">Available Shifts</h2>
+            <div id="level-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          
+          <div>
+            <h2 style="border-bottom: 1px solid var(--border-dim); padding-bottom: 0.5rem; margin-bottom: 1rem;">Infrastructure Upgrades</h2>
+            <div id="upgrade-list" style="font-size: 0.85rem;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-dim); display: flex; justify-content: space-between; align-items: center;">
+          <div class="status-item">Available XP: <span id="menu-xp" style="color: var(--neon-amber);">0</span></div>
+          <button id="btn-start-game" class="btn-primary" style="width: auto; padding: 0.75rem 2rem;">Begin Shift</button>
+        </div>
       </div>
     </div>
 

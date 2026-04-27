@@ -1,0 +1,96 @@
+{
+  "id": "level_02",
+  "name": "Midnight Express at Station Alpha",
+  "description": "The graveyard shift brings fewer but much heavier trains. Handle large passenger loads with limited staff. Precision is key.",
+  "theme": "night",
+  "durationMinutes": 180,
+  "platforms": [
+    { "id": "P1", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P2", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P3", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P4", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P5", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P6", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P7", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P8", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P9", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P10", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 15, "cleaningTime": 0 }
+  ],
+  "trains": [
+    {
+      "id": "NT-1",
+      "name": "Sleeper Express",
+      "type": "priority",
+      "direction": "inbound",
+      "priority": 3,
+      "platformCompatibility": ["long"],
+      "arrivalTime": 5,
+      "scheduledDepartureTime": 20,
+      "dwellTime": 15,
+      "passengerLoad": 1200,
+      "baggageLoad": 300,
+      "boardingTimeBase": 8,
+      "deboardingTimeBase": 7,
+      "requiresCleaning": true,
+      "requiresWater": true,
+      "requiresMaintenanceCheck": false,
+      "status": "approaching"
+    },
+    {
+      "id": "NT-2",
+      "name": "Night Owl Local",
+      "type": "local",
+      "direction": "inbound",
+      "priority": 1,
+      "platformCompatibility": ["short", "medium", "long"],
+      "arrivalTime": 10,
+      "scheduledDepartureTime": 18,
+      "dwellTime": 5,
+      "passengerLoad": 200,
+      "baggageLoad": 20,
+      "boardingTimeBase": 2,
+      "deboardingTimeBase": 3,
+      "requiresCleaning": false,
+      "requiresWater": false,
+      "requiresMaintenanceCheck": false,
+      "status": "approaching"
+    },
+    {
+      "id": "NT-3",
+      "name": "Cargo Transship",
+      "type": "special",
+      "direction": "inbound",
+      "priority": 2,
+      "platformCompatibility": ["medium", "long"],
+      "arrivalTime": 25,
+      "scheduledDepartureTime": 45,
+      "dwellTime": 20,
+      "passengerLoad": 0,
+      "baggageLoad": 1000,
+      "boardingTimeBase": 10,
+      "deboardingTimeBase": 10,
+      "requiresCleaning": false,
+      "requiresWater": false,
+      "requiresMaintenanceCheck": true,
+      "status": "approaching"
+    }
+  ],
+  "events": [
+    {
+      "type": "maintenance",
+      "targetId": "P10",
+      "startMinute": 0,
+      "endMinute": 15,
+      "description": "P10 undergoing nightly track inspection."
+    }
+  ],
+  "winConditions": {
+    "minServed": 2,
+    "minReputation": 80,
+    "maxDelays": 1
+  },
+  "loseConditions": {
+    "minReputation": 40,
+    "maxMissedDepartures": 2
+  }
+}

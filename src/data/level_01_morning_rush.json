@@ -11,9 +11,11 @@
     { "id": "P5", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
     { "id": "P6", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
     { "id": "P7", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 5, "cleaningTime": 0 },
-    { "id": "P8", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P8", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
     { "id": "P9", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
-    { "id": "P10", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 }
+    { "id": "P10", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "SIDING", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "HOLD", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 }
   ],
   "trains": [
     {
@@ -62,7 +64,7 @@
       "priority": 3,
       "platformCompatibility": ["long"],
       "arrivalTime": 4,
-      "scheduledDepartureTime": 11,
+      "scheduledDepartureTime": 9,
       "dwellTime": 7,
       "passengerLoad": 800,
       "baggageLoad": 100,

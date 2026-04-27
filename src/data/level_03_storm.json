@@ -1,0 +1,108 @@
+{
+  "id": "level_03",
+  "name": "Severe Storm at Station Alpha",
+  "description": "A powerful storm is battering the region. Trains are delayed, tracks are slick, and technical failures are frequent. Keep the passengers safe and moving.",
+  "durationMinutes": 240,
+  "platforms": [
+    { "id": "P1", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P2", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P3", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P4", "length": "long", "status": "free", "currentTrainId": null, "blockedUntil": 20, "cleaningTime": 0 },
+    { "id": "P5", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P6", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P7", "length": "medium", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P8", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 },
+    { "id": "P9", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 40, "cleaningTime": 0 },
+    { "id": "P10", "length": "short", "status": "free", "currentTrainId": null, "blockedUntil": 0, "cleaningTime": 0 }
+  ],
+  "trains": [
+    {
+      "id": "ST-1",
+      "name": "Delayed Express",
+      "type": "express",
+      "direction": "inbound",
+      "priority": 2,
+      "platformCompatibility": ["medium", "long"],
+      "arrivalTime": 5,
+      "scheduledDepartureTime": 10,
+      "dwellTime": 8,
+      "passengerLoad": 400,
+      "baggageLoad": 50,
+      "boardingTimeBase": 4,
+      "deboardingTimeBase": 4,
+      "requiresCleaning": true,
+      "requiresWater": false,
+      "requiresMaintenanceCheck": false,
+      "status": "approaching"
+    },
+    {
+      "id": "ST-2",
+      "name": "Emergency Shuttle",
+      "type": "priority",
+      "direction": "inbound",
+      "priority": 4,
+      "platformCompatibility": ["short", "medium", "long"],
+      "arrivalTime": 15,
+      "scheduledDepartureTime": 22,
+      "dwellTime": 5,
+      "passengerLoad": 100,
+      "baggageLoad": 0,
+      "boardingTimeBase": 2,
+      "deboardingTimeBase": 2,
+      "requiresCleaning": false,
+      "requiresWater": false,
+      "requiresMaintenanceCheck": false,
+      "status": "approaching"
+    },
+    {
+      "id": "ST-3",
+      "name": "Stranded Local",
+      "type": "local",
+      "direction": "inbound",
+      "priority": 1,
+      "platformCompatibility": ["short", "medium", "long"],
+      "arrivalTime": 30,
+      "scheduledDepartureTime": 45,
+      "dwellTime": 10,
+      "passengerLoad": 300,
+      "baggageLoad": 20,
+      "boardingTimeBase": 5,
+      "deboardingTimeBase": 5,
+      "requiresCleaning": false,
+      "requiresWater": false,
+      "requiresMaintenanceCheck": false,
+      "status": "approaching"
+    }
+  ],
+  "events": [
+    {
+      "type": "weather",
+      "startMinute": 0,
+      "endMinute": 240,
+      "description": "SEVERE STORM: Dwell times significantly increased. Signal failures likely."
+    },
+    {
+      "type": "maintenance",
+      "targetId": "P4",
+      "startMinute": 0,
+      "endMinute": 20,
+      "description": "P4 blocked by debris on tracks."
+    },
+    {
+      "type": "maintenance",
+      "targetId": "P9",
+      "startMinute": 0,
+      "endMinute": 40,
+      "description": "P9 signaling cable damage."
+    }
+  ],
+  "winConditions": {
+    "minServed": 3,
+    "minReputation": 60,
+    "maxDelays": 3
+  },
+  "loseConditions": {
+    "minReputation": 20,
+    "maxMissedDepartures": 4
+  }
+}

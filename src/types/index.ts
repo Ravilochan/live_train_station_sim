@@ -61,6 +61,7 @@ export interface LevelData {
   id: string;
   name: string;
   description: string;
+  theme?: 'day' | 'night';
   durationMinutes: number; // e.g., 180 game minutes (3 hours)
   platforms: Platform[];
   trains: Train[];
@@ -74,4 +75,11 @@ export interface LevelData {
     minReputation: number;
     maxMissedDepartures: number;
   };
+}
+
+export interface Upgrades {
+  staffTraining: number; // level 0, 1, 2... reduces boarding time
+  techSystems: number;   // reduces cleaning/water time
+  dispatchOps: number;   // reduces delay penalties
+  maintenanceCrew: number; // reduces platform block durations
 }

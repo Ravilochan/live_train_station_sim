@@ -26,8 +26,23 @@ export class UIManager {
   private modalXp = document.getElementById('modal-xp')!;
   private modalRep = document.getElementById('modal-rep')!;
 
+  private menuOverlay = document.getElementById('menu-overlay')!;
+  private levelList = document.getElementById('level-list')!;
+  private upgradeList = document.getElementById('upgrade-list')!;
+  private menuXp = document.getElementById('menu-xp')!;
+  private btnStart = document.getElementById('btn-start-game')!;
+
+  private levels: any[] = [];
+  private selectedLevelId: string | null = null;
+
   constructor() {
     this.setupListeners();
+  }
+
+  setLevels(levels: any[]) {
+    this.levels = levels;
+    this.selectedLevelId = levels[0].id;
+    this.renderMenu();
   }
 
   private setupListeners() {
@@ -50,6 +65,79 @@ export class UIManager {
         this.btnAudio.innerText = isMuted ? '🔇 Unmute' : '🔊 Mute';
       });
     });
+
+    this.btnStart.addEventListener('click', () => {
+      const level = this.levels.find(l => l.id === this.selectedLevelId);
+      if (level) {
+        this.menuOverlay.classList.add('hidden');
+        gameState.loadLevel(level);
+        gameState.start();
+        globalEvents.emit('SHIFT_STARTED');
+      }
+    });
+
+    // Modal buttons
+    document.getElementById('btn-restart')!.onclick = () => {
+        this.modalOverlay.classList.add('hidden');
+        const level = this.levels.find(l => l.id === this.selectedLevelId);
+        gameState.loadLevel(level);
+        gameState.start();
+        globalEvents.emit('SHIFT_STARTED');
+    };
+
+    document.getElementById('btn-to-menu')!.onclick = () => {
+        this.modalOverlay.classList.add('hidden');
+        this.menuOverlay.classList.remove('hidden');
+        this.renderMenu();
+    };
+  }
+
+  private renderMenu() {
+    this.menuXp.innerText = gameState.xp.toString();
+    
+    // Render Levels
+    this.levelList.innerHTML = '';
+    this.levels.forEach(l => {
+      const el = document.createElement('div');
+      el.className = `level-item ${this.selectedLevelId === l.id ? 'selected' : ''}`;
+      el.innerHTML = `
+        <div class="level-name">${l.name}</div>
+        <div class="level-desc">${l.description}</div>
+      `;
+      el.onclick = () => {
+        this.selectedLevelId = l.id;
+        this.renderMenu();
+      };
+      this.levelList.appendChild(el);
+    });
+
+    // Render Upgrades
+    this.upgradeList.innerHTML = '';
+    const upgradesData = [
+      { id: 'staffTraining', name: 'Staff Training', desc: 'Reduces passenger boarding time.', cost: 50 },
+      { id: 'techSystems', name: 'Digital Signaling', desc: 'Reduces deboarding/cleaning time.', cost: 75 },
+      { id: 'dispatchOps', name: 'Dispatch Ops', desc: 'Reduces reputation penalty for late trains.', cost: 100 },
+      { id: 'maintenanceCrew', name: 'Rapid Response', desc: 'Reduces duration of maintenance blocks.', cost: 120 }
+    ];
+
+    upgradesData.forEach(u => {
+      const currentLevel = (gameState.upgrades as any)[u.id];
+      const el = document.createElement('div');
+      el.className = 'upgrade-item';
+      el.innerHTML = `
+        <div class="upgrade-name">${u.name} (LVL ${currentLevel})</div>
+        <div class="upgrade-desc">${u.desc}</div>
+        <div class="upgrade-cost">COST: ${u.cost} XP</div>
+      `;
+      el.onclick = () => {
+        if (gameState.purchaseUpgrade(u.id, u.cost)) {
+          this.renderMenu();
+        } else {
+          alert('Not enough XP!');
+        }
+      };
+      this.upgradeList.appendChild(el);
+    });
   }
 
   private updateSpeedButtons = (speed: number) => {
@@ -69,6 +157,7 @@ export class UIManager {
     this.scoreEl.innerText = data.score.toString();
     this.xpEl.innerText = data.xp.toString();
     this.repEl.innerText = data.reputation.toString();
+    this.menuXp.innerText = data.xp.toString();
   }
 
   private handleDisruption = (msg: string | null) => {
@@ -133,13 +222,22 @@ export class UIManager {
       return;
     }
 
+    const services = [];
+    if (train.requiresCleaning) services.push('CLEANING');
+    if (train.requiresWater) services.push('WATER');
+    if (train.requiresMaintenanceCheck) services.push('MAINTENANCE');
+    const servicesText = services.length > 0 ? services.join(', ') : 'NONE';
+
     this.detailsContainer.innerHTML = `
       <div class="details-grid">
         <div class="details-label">TYPE</div><div class="details-value" style="color:var(--neon-purple)">${train.type.toUpperCase()}</div>
         <div class="details-label">PRIORITY</div><div class="details-value">${train.priority}</div>
-        <div class="details-label">LENGTH</div><div class="details-value">${train.platformCompatibility[0]}</div>
+        <div class="details-label">DIRECTION</div><div class="details-value">${train.direction.toUpperCase()}</div>
+        <div class="details-label">ARRIVAL</div><div class="details-value">${train.arrivalTime}m</div>
         <div class="details-label">PASSENGERS</div><div class="details-value">${train.passengerLoad}</div>
-        <div class="details-label">SERVICE</div><div class="details-value">${train.currentDwellTimer || '0'}m</div>
+        <div class="details-label">BAGGAGE</div><div class="details-value">${train.baggageLoad}</div>
+        <div class="details-label">SERVICES</div><div class="details-value" style="font-size:0.65rem; color:var(--neon-amber)">${servicesText}</div>
+        <div class="details-label">TIMER</div><div class="details-value">${train.currentDwellTimer || '0'}m</div>
         <div class="details-label">SCHEDULED</div><div class="details-value">${train.scheduledDepartureTime}m</div>
       </div>
     `;
@@ -178,6 +276,7 @@ export class UIManager {
     this.modalXp.innerText = gameState.xp.toString();
     this.modalRep.innerText = gameState.reputation.toString();
     
+    this.actionsContainer.innerHTML = ''; 
     this.modalOverlay.classList.remove('hidden');
   }
 }

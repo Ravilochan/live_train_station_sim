@@ -12,7 +12,9 @@ export class AudioManager {
     globalEvents.on(EVENTS.TRAIN_SPAWNED, () => this.playTrainArrival());
     globalEvents.on(EVENTS.TRAIN_STATUS_CHANGED, (train: any) => {
       if (train.status === 'cleared') this.playTrainDeparture();
+      if (train.status === 'ready') this.playPAChime();
     });
+    globalEvents.on('ILLEGAL_ASSIGNMENT', () => this.playErrorBuzzer());
     globalEvents.on(EVENTS.TRAIN_SELECTED, () => this.playUIClick());
     globalEvents.on(EVENTS.PLATFORM_STATUS_CHANGED, () => this.playSignalBeep());
     globalEvents.on(EVENTS.GAME_OVER, (data: any) => {
@@ -117,3 +119,14 @@ export class AudioManager {
 }
 
 export const audioManager = new AudioManager();
+  playPAChime() {
+    // Classic 4-note chime
+    const notes = [440, 554, 659, 880];
+    notes.forEach((freq, i) => {
+      setTimeout(() => this.playTone(freq, 'sine', 0.4, 0.03), i * 300);
+    });
+  }
+
+  playErrorBuzzer() {
+    this.playTone(100, 'sawtooth', 0.3, 0.1);
+  }
