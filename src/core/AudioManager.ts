@@ -116,9 +116,7 @@ export class AudioManager {
     setTimeout(() => this.playTone(500, 'sine', 0.2, 0.1), 200);
     setTimeout(() => this.playTone(600, 'sine', 0.6, 0.1), 400);
   }
-}
 
-export const audioManager = new AudioManager();
   playPAChime() {
     // Classic 4-note chime
     const notes = [440, 554, 659, 880];
@@ -130,3 +128,6 @@ export const audioManager = new AudioManager();
   playErrorBuzzer() {
     this.playTone(100, 'sawtooth', 0.3, 0.1);
   }
+}
+
+export const audioManager = new AudioManager();
