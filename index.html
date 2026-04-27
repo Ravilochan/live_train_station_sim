@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Train Station Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app-container">
+      <div id="left-panel">
+        <h2>Incoming Trains</h2>
+        <div id="train-queue">
+          <!-- Dynamically populated timetable and queue -->
+        </div>
+      </div>
+      
+      <div id="center-panel">
+        <div id="game-container"></div>
+      </div>
+      
+      <div id="right-panel">
+        <h2>Selected Train</h2>
+        <div id="train-details">
+          <p>Select a train to view details.</p>
+        </div>
+        <div id="train-actions">
+          <!-- Dynamically populated actions -->
+        </div>
+      </div>
+      
+      <div id="bottom-bar">
+        <div class="status-item">Score: <span id="ui-score">0</span></div>
+        <div class="status-item">XP: <span id="ui-xp">0</span></div>
+        <div class="status-item">Reputation: <span id="ui-reputation">80</span>/100</div>
+        <div class="status-item">Time: <span id="ui-time">08:00</span></div>
+        <div class="status-item" id="ui-weather">⛅ Mild Rain</div>
+        
+        <div class="controls">
+          <button id="btn-audio">🔊 Mute</button>
+          <button id="btn-pause">Pause</button>
+          <button id="btn-1x" class="active">1x</button>
+          <button id="btn-2x">2x</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="alert-banner" class="hidden">
+      <!-- Active disruption banner -->
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" class="hidden">
+      <div class="tutorial-box">
+        <h3 id="tutorial-title">Tutorial</h3>
+        <p id="tutorial-text">Instructions go here.</p>
+        <button id="btn-tutorial-ok" class="btn-primary">Got it</button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="modal-overlay" class="hidden">
+      <div class="modal-box">
+        <h1 id="modal-title">Shift Over</h1>
+        <p id="modal-reason" class="reason-text"></p>
+        <div class="stats-grid">
+          <div>Score: <span id="modal-score"></span></div>
+          <div>XP: <span id="modal-xp"></span></div>
+          <div>Reputation: <span id="modal-rep"></span></div>
+        </div>
+        <button id="btn-restart" class="btn-primary" onclick="location.reload()">Restart Level</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
