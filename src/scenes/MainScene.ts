@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { gameState } from '../core/GameState';
 import { globalEvents, EVENTS } from '../core/EventEmitter';
 import type { Train, Platform } from '../types';
@@ -252,6 +252,9 @@ export class MainScene extends Phaser.Scene {
     g.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
     g.on('pointerdown', () => gameState.selectTrain(train.id));
     this.trainsMap.set(train.id, g);
+    // Store dimensions for later highlight use since Graphics doesn't have getBounds in v4
+    (g as any).drawWidth = 40;
+    (g as any).drawHeight = 15;
   }
 
   private drawTrain(g: Phaser.GameObjects.Graphics, w: number, h: number, color: number) {
@@ -262,6 +265,9 @@ export class MainScene extends Phaser.Scene {
     g.strokeRoundedRect(0, 0, w, h, 4);
     g.lineStyle(1, 0xFFFFFF, 0.4);
     g.lineBetween(w*0.2, h*0.5, w*0.8, h*0.5);
+    // Store dimensions for later highlight use
+    (g as any).drawWidth = w;
+    (g as any).drawHeight = h;
   }
 
   private handleTrainStatusChanged = (train: Train) => {
@@ -314,17 +320,19 @@ export class MainScene extends Phaser.Scene {
         this.selectionBrackets.clear();
         this.tweens.killTweensOf(this.selectionBrackets);
         this.selectionBrackets.alpha = 1;
+        this.selectionBrackets.setVisible(false);
     }
 
     if (train) {
         const trainGraphics = this.trainsMap.get(train.id);
         if (trainGraphics && this.selectionBrackets) {
+            this.selectionBrackets.setVisible(true);
             const drawBrackets = () => {
                 if (!this.selectionBrackets || !trainGraphics) return;
                 this.selectionBrackets.clear();
                 const padding = 4;
-                const w = (trainGraphics as any).width ? (trainGraphics as any).width + (padding * 2) : 48;
-                const h = (trainGraphics as any).height ? (trainGraphics as any).height + (padding * 2) : 23;
+                const w = (trainGraphics as any).drawWidth ? (trainGraphics as any).drawWidth + (padding * 2) : 48;
+                const h = (trainGraphics as any).drawHeight ? (trainGraphics as any).drawHeight + (padding * 2) : 23;
                 const len = 6; 
                 this.selectionBrackets.lineStyle(2, this.COLOR_NEON_CYAN, 1);
                 this.selectionBrackets.beginPath();

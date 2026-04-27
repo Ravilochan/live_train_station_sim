@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { MainScene } from './scenes/MainScene';
 import { UIManager } from './ui/UIManager';
 import './core/TutorialManager';
