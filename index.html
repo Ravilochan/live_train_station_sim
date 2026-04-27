@@ -38,9 +38,12 @@
         <div class="status-item">XP: <span id="ui-xp">0</span></div>
         <div class="status-item">Reputation: <span id="ui-reputation">80</span>/100</div>
         <div class="status-item">Time: <span id="ui-time">08:00</span></div>
-        <div class="status-item" id="ui-weather">⛅ Mild Rain</div>
+        <div class="status-item" id="ui-weather" style="display: flex; align-items: center; gap: 0.5rem; color: var(--neon-cyan);">
+           <span id="ui-weather-icon">⛅</span> <span id="ui-weather-text">Mild Rain</span>
+        </div>
         
         <div class="controls">
+          <button id="btn-help-game">📖 Manual</button>
           <button id="btn-audio">🔊 Mute</button>
           <button id="btn-pause">Pause</button>
           <button id="btn-1x" class="active">1x</button>
@@ -51,6 +54,52 @@
     
     <div id="alert-banner" class="hidden">
       <!-- Active disruption banner -->
+    </div>
+
+    <!-- Help / Manual Overlay -->
+    <div id="help-overlay" class="hidden">
+      <div class="modal-box help-box">
+        <h1 style="font-family: 'JetBrains Mono', monospace; color: var(--neon-cyan); margin-bottom: 1rem;">STATION MASTER FIELD MANUAL</h1>
+        <div class="help-content">
+          <h3>1. Objective</h3>
+          <p>Your job is to route incoming trains to compatible platforms, service them, and clear them for departure on time. If your Reputation falls below the level threshold, or if you miss too many scheduled departures, you will be dismissed.</p>
+          
+          <h3>2. The Station Layout</h3>
+          <ul>
+            <li><strong>P1-P4 (Long):</strong> Can fit any train type.</li>
+            <li><strong>P5-P8 (Medium):</strong> Can fit Local and Express trains.</li>
+            <li><strong>P9-P10 (Short):</strong> Can only fit Local trains.</li>
+            <li><strong>HOLD TRACK (Bottom Left):</strong> A long emergency buffer track. If all platforms are full, assign an incoming train here to stop the "Waiting Outside" reputation penalty.</li>
+            <li><strong>SIDING (Top Right):</strong> A short track. Use it to temporarily tuck away short Local trains to free up main platforms.</li>
+          </ul>
+
+          <h3>3. Train Types</h3>
+          <ul>
+            <li style="color: var(--neon-green)"><strong>Local (Green):</strong> Low priority, fits anywhere.</li>
+            <li style="color: var(--neon-cyan)"><strong>Express (Cyan):</strong> Medium priority, heavy loads.</li>
+            <li style="color: var(--neon-amber)"><strong>Priority (Amber):</strong> High priority, massive reputation penalties if delayed.</li>
+            <li style="color: var(--neon-purple)"><strong>Special (Purple):</strong> Connection/Cargo trains. Usually require special maintenance.</li>
+          </ul>
+
+          <h3>4. Service Cycle & Timers</h3>
+          <p>Trains undergo <strong>Deboarding</strong> -> <strong>Cleaning/Service</strong> -> <strong>Boarding</strong>. Timers are affected by:</p>
+          <ul>
+            <li><strong>Weather:</strong> Rain and Storms slow down deboarding.</li>
+            <li><strong>Baggage:</strong> Heavy baggage (>50 units) adds boarding time.</li>
+            <li><strong>Services:</strong> Trains requiring Water or Maintenance Checks take longer.</li>
+            <li><strong>Upgrades:</strong> Purchasing Tech and Staff upgrades reduces these base timers permanently.</li>
+            <li><strong>Cleaning Status:</strong> Trains needing cleaning will put the platform into a Purple state until finished.</li>
+          </ul>
+
+          <h3>5. Penalties & Errors</h3>
+          <ul>
+            <li><strong>Waiting Too Long:</strong> Trains left "Waiting" outside the station for >3 minutes drain your Reputation continuously.</li>
+            <li><strong>Late Departures:</strong> Missing the "Scheduled" departure time reduces Score and Reputation.</li>
+            <li><strong>Illegal Assignment (Error Buzzer):</strong> Trying to assign a Long train to a Short platform, or assigning to an occupied platform, will fail.</li>
+          </ul>
+        </div>
+        <button id="btn-close-help" class="btn-primary" style="margin-top: 1.5rem;">Acknowledge</button>
+      </div>
     </div>
 
     <!-- Tutorial Overlay -->
@@ -103,7 +152,10 @@
         
         <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-dim); display: flex; justify-content: space-between; align-items: center;">
           <div class="status-item">Available XP: <span id="menu-xp" style="color: var(--neon-amber);">0</span></div>
-          <button id="btn-start-game" class="btn-primary" style="width: auto; padding: 0.75rem 2rem;">Begin Shift</button>
+          <div style="display: flex; gap: 1rem;">
+            <button id="btn-help-menu" class="btn-primary" style="background: var(--bg-card); border: 1px solid var(--border-dim); width: auto; padding: 0.75rem 1rem;">Manual</button>
+            <button id="btn-start-game" class="btn-primary" style="width: auto; padding: 0.75rem 2rem;">Begin Shift</button>
+          </div>
         </div>
       </div>
     </div>

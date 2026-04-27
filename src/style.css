@@ -368,3 +368,45 @@ button {
   font-family: 'JetBrains Mono', monospace;
   margin-top: 0.5rem;
 }
+
+/* Help Manual Styles */
+.help-box {
+  max-width: 700px;
+  width: 90vw;
+}
+
+.help-content {
+  text-align: left;
+  overflow-y: auto;
+  max-height: 60vh;
+  padding-right: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.help-content h3 {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--neon-cyan);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-dim);
+  padding-bottom: 0.25rem;
+}
+
+.help-content p {
+  margin-bottom: 1rem;
+  color: var(--text-main);
+}
+
+.help-content ul {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.help-content li {
+  margin-bottom: 0.5rem;
+}
+
+.help-content strong {
+  color: var(--neon-cyan);
+}

@@ -31,6 +31,11 @@ export class UIManager {
   private upgradeList = document.getElementById('upgrade-list')!;
   private menuXp = document.getElementById('menu-xp')!;
   private btnStart = document.getElementById('btn-start-game')!;
+  
+  private helpOverlay = document.getElementById('help-overlay')!;
+  private btnHelpMenu = document.getElementById('btn-help-menu')!;
+  private btnHelpGame = document.getElementById('btn-help-game')!;
+  private btnCloseHelp = document.getElementById('btn-close-help')!;
 
   private levels: any[] = [];
   private selectedLevelId: string | null = null;
@@ -75,6 +80,11 @@ export class UIManager {
         globalEvents.emit('SHIFT_STARTED');
       }
     });
+
+    const toggleHelp = () => this.helpOverlay.classList.toggle('hidden');
+    this.btnHelpMenu.addEventListener('click', toggleHelp);
+    this.btnHelpGame.addEventListener('click', toggleHelp);
+    this.btnCloseHelp.addEventListener('click', toggleHelp);
 
     // Modal buttons
     document.getElementById('btn-restart')!.onclick = () => {
@@ -161,11 +171,27 @@ export class UIManager {
   }
 
   private handleDisruption = (msg: string | null) => {
+    const weatherIcon = document.getElementById('ui-weather-icon')!;
+    const weatherText = document.getElementById('ui-weather-text')!;
+
     if (msg) {
       this.alertBanner.innerText = msg;
       this.alertBanner.classList.remove('hidden');
+      
+      const lower = msg.toLowerCase();
+      if (lower.includes('rain')) {
+          weatherIcon.innerText = '🌦️';
+          weatherText.innerText = 'Rain';
+      } else if (lower.includes('storm')) {
+          weatherIcon.innerText = '⛈️';
+          weatherText.innerText = 'Storm';
+      } else if (lower.includes('maintenance')) {
+          // Maintenance isn't weather, keep default or clear
+      }
     } else {
       this.alertBanner.classList.add('hidden');
+      weatherIcon.innerText = '☀️';
+      weatherText.innerText = 'Clear';
     }
   }
 

@@ -7,6 +7,7 @@ export class MainScene extends Phaser.Scene {
   private trainsMap: Map<string, Phaser.GameObjects.Graphics> = new Map();
   private platformGraphics: Map<string, Phaser.GameObjects.Graphics> = new Map();
   private weatherParticles?: Phaser.GameObjects.Particles.ParticleEmitter;
+  private selectionBrackets?: Phaser.GameObjects.Graphics;
 
   // Theme Colors
   private COLOR_BG = 0x0B0F19;
@@ -24,9 +25,13 @@ export class MainScene extends Phaser.Scene {
   }
 
   create() {
+    this.createMaintenanceTexture();
     this.updateTheme();
     this.drawStaticTracks();
     this.drawPlatforms();
+
+    this.selectionBrackets = this.add.graphics();
+    this.selectionBrackets.setDepth(100);
 
     globalEvents.on(EVENTS.TRAIN_SPAWNED, this.handleTrainSpawned);
     globalEvents.on(EVENTS.TRAIN_STATUS_CHANGED, this.handleTrainStatusChanged);
@@ -87,6 +92,29 @@ export class MainScene extends Phaser.Scene {
       }
   }
 
+  private createMaintenanceTexture() {
+    const size = 32;
+    const g = this.make.graphics({ x: 0, y: 0 });
+    g.fillStyle(0xF59E0B, 1);
+    g.fillRect(0, 0, size, size);
+    g.fillStyle(0x000000, 1);
+    g.beginPath();
+    g.moveTo(0, size);
+    g.lineTo(size, 0);
+    g.lineTo(size, size/2);
+    g.lineTo(size/2, size);
+    g.closePath();
+    g.fillPath();
+    g.beginPath();
+    g.moveTo(0, size/2);
+    g.lineTo(size/2, 0);
+    g.lineTo(0, 0);
+    g.closePath();
+    g.fillPath();
+    g.generateTexture('maintenance-stripes', size, size);
+    g.destroy();
+  }
+
   private drawStaticTracks() {
     this.children.getAll().forEach(c => {
         if (c.name === 'static_track') c.destroy();
@@ -95,7 +123,6 @@ export class MainScene extends Phaser.Scene {
     const graphics = this.add.graphics();
     graphics.setName('static_track');
     graphics.lineStyle(2, this.COLOR_TRACK, 0.4);
-
     graphics.lineBetween(0, 100, 800, 100);
     graphics.lineBetween(0, 700, 800, 700);
 
@@ -114,10 +141,7 @@ export class MainScene extends Phaser.Scene {
         graphics.strokePath();
         currentY += 50;
       }
-      
-      // Siding link
       graphics.lineBetween(600, 100, 600, 150);
-      // Hold link
       graphics.lineBetween(200, 650, 200, 700);
     }
   }
@@ -125,6 +149,7 @@ export class MainScene extends Phaser.Scene {
   private drawPlatforms() {
     this.platformGraphics.forEach(g => {
         if ((g as any).signalLight) (g as any).signalLight.destroy();
+        if ((g as any).maintenanceText) (g as any).maintenanceText.destroy();
         g.destroy();
     });
     this.platformGraphics.clear();
@@ -145,10 +170,16 @@ export class MainScene extends Phaser.Scene {
     const actualY = isSiding ? 150 : (isHold ? 650 : y);
 
     const g = this.add.graphics();
-    
-    // Signal Light
     const signal = this.add.circle(x + width/2 + 15, actualY, 6, 0xef4444);
     (g as any).signalLight = signal;
+
+    const mText = this.add.text(x, actualY, 'MAINTENANCE IN PROGRESS', {
+        fontFamily: 'JetBrains Mono',
+        fontSize: '10px',
+        color: '#000000',
+        fontStyle: 'bold'
+    }).setOrigin(0.5).setDepth(10).setVisible(false);
+    (g as any).maintenanceText = mText;
 
     this.updatePlatformGraphics(g, p, x, actualY, width);
     
@@ -170,7 +201,13 @@ export class MainScene extends Phaser.Scene {
     const color = this.getPlatformColor(p.status);
     g.lineStyle(2, color, 0.4);
     g.strokeRoundedRect(x - width/2 - 2, y - 17, width + 4, 34, 4);
-    g.fillStyle(this.COLOR_PLATFORM_FREE);
+
+    if (p.status === 'maintenance') {
+        g.fillStyle(0xF59E0B, 1);
+    } else {
+        g.fillStyle(this.COLOR_PLATFORM_FREE);
+    }
+    
     g.fillRoundedRect(x - width/2, y - 15, width, 30, 4);
     g.lineStyle(1, color, 0.8);
     g.strokeRoundedRect(x - width/2, y - 15, width, 30, 4);
@@ -178,6 +215,10 @@ export class MainScene extends Phaser.Scene {
     if ((g as any).signalLight) {
         const signalColor = (p.status === 'free' || p.status === 'maintenance') ? 0xef4444 : (p.status === 'reserved' ? 0xf59e0b : 0x10b981);
         (g as any).signalLight.setFillStyle(signalColor);
+    }
+
+    if ((g as any).maintenanceText) {
+        (g as any).maintenanceText.setVisible(p.status === 'maintenance');
     }
   }
 
@@ -268,17 +309,63 @@ export class MainScene extends Phaser.Scene {
 
   private handleTrainSelected = (train: Train | null) => {
     this.platformGraphics.forEach((g) => { this.tweens.killTweensOf(g); g.alpha = 1; });
-    if (train && train.status === 'waiting') {
-        this.platformGraphics.forEach((g, id) => {
-            const p = gameState.platforms.get(id);
-            if (p && p.status === 'free' && train.platformCompatibility.includes(p.length)) {
-                this.tweens.add({ targets: g, alpha: 0.4, duration: 600, yoyo: true, repeat: -1 });
-            }
-        });
+
+    if (this.selectionBrackets) {
+        this.selectionBrackets.clear();
+        this.tweens.killTweensOf(this.selectionBrackets);
+        this.selectionBrackets.alpha = 1;
+    }
+
+    if (train) {
+        const trainGraphics = this.trainsMap.get(train.id);
+        if (trainGraphics && this.selectionBrackets) {
+            const drawBrackets = () => {
+                if (!this.selectionBrackets || !trainGraphics) return;
+                this.selectionBrackets.clear();
+                const padding = 4;
+                const w = (trainGraphics as any).width ? (trainGraphics as any).width + (padding * 2) : 48;
+                const h = (trainGraphics as any).height ? (trainGraphics as any).height + (padding * 2) : 23;
+                const len = 6; 
+                this.selectionBrackets.lineStyle(2, this.COLOR_NEON_CYAN, 1);
+                this.selectionBrackets.beginPath();
+                this.selectionBrackets.moveTo(0, len); this.selectionBrackets.lineTo(0, 0); this.selectionBrackets.lineTo(len, 0);
+                this.selectionBrackets.strokePath();
+                this.selectionBrackets.beginPath();
+                this.selectionBrackets.moveTo(w - len, 0); this.selectionBrackets.lineTo(w, 0); this.selectionBrackets.lineTo(w, len);
+                this.selectionBrackets.strokePath();
+                this.selectionBrackets.beginPath();
+                this.selectionBrackets.moveTo(0, h - len); this.selectionBrackets.lineTo(0, h); this.selectionBrackets.lineTo(len, h);
+                this.selectionBrackets.strokePath();
+                this.selectionBrackets.beginPath();
+                this.selectionBrackets.moveTo(w - len, h); this.selectionBrackets.lineTo(w, h); this.selectionBrackets.lineTo(w, h - len);
+                this.selectionBrackets.strokePath();
+            };
+            drawBrackets();
+            this.selectionBrackets.x = trainGraphics.x - 4;
+            this.selectionBrackets.y = trainGraphics.y - 4;
+            this.tweens.add({ targets: this.selectionBrackets, alpha: 0.3, duration: 600, yoyo: true, repeat: -1 });
+        }
+
+        if (train.status === 'waiting') {
+            this.platformGraphics.forEach((g, id) => {
+                const p = gameState.platforms.get(id);
+                if (p && p.status === 'free' && train.platformCompatibility.includes(p.length)) {
+                    this.tweens.add({ targets: g, alpha: 0.5, duration: 500, yoyo: true, repeat: -1 });
+                }
+            });
+        }
     }
   }
 
   update() {
+      if (gameState.selectedTrainId && this.selectionBrackets) {
+          const g = this.trainsMap.get(gameState.selectedTrainId);
+          if (g) {
+              this.selectionBrackets.x = g.x - 4;
+              this.selectionBrackets.y = g.y - 4;
+          }
+      }
+
       gameState.trains.forEach((train, id) => {
           const g = this.trainsMap.get(id);
           if (g && (train.status === 'deboarding' || train.status === 'boarding')) {
